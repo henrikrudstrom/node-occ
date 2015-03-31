@@ -1,3 +1,6 @@
+REM ----------------------------------------------------------
+REM  PREPARE
+REM ----------------------------------------------------------
 CALL git submodule update --init --recursive
 
 CALL SETENV.BAT
@@ -37,4 +40,23 @@ CALL msbuild INSTALL.vcxproj /p:Configuration=Release
 ECHO PREFIX = %PREFIX%
 ECHO PREFIX = %GENERATOR%
 cd ..
+
+REM ----------------------------------------------------------
+REM  BUILD
+REM ----------------------------------------------------------
 CALL npm install
+
+REM ----------------------------------------------------------
+REM  TEST
+REM ----------------------------------------------------------
+CALL npm test
+
+REM ----------------------------------------------------------
+REM  PACKAGE
+REM ----------------------------------------------------------
+SET SRC=%PREFIX%/Win32/bin
+SRC=%SRC:/=\%
+XCOPY %PREFIX%\*.dll .\build\Release
+SET PACKAGE=node-occ-package.zip
+7z a %PACKAGE% .\build\Release\*.*
+appveyor PushArtifact %PACKAGE%
