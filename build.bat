@@ -1,3 +1,4 @@
+ECHO ON
 REM ----------------------------------------------------------
 REM  PREPARE
 REM ----------------------------------------------------------
@@ -30,12 +31,13 @@ CALL cmake -DOCE_INSTALL_PREFIX:STRING="%PREFIX%" ^
 -DOCE_DISABLE_X11:BOOLEAN=ON ^
 -DOCE_DISABLE_TKSERVICE_FONT:BOOLEAN=ON ^
 -DOCE_USE_PCH:BOOLEAN=ON  ^
--G "%GENERATOR%" ../oce  
+-G "%GENERATOR%" ../oce   > nul
+
 
 REM msbuild /m oce.sln
-CALL msbuild /m oce.sln /p:Configuration=Release
+CALL msbuild /m oce.sln /p:Configuration=Release > nul
 
-CALL msbuild INSTALL.vcxproj /p:Configuration=Release
+CALL msbuild INSTALL.vcxproj /p:Configuration=Release > nul
 ECHO PREFIX = %PREFIX%
 ECHO PREFIX = %GENERATOR%
 cd ..
@@ -54,8 +56,8 @@ REM ----------------------------------------------------------
 REM  PACKAGE
 REM ----------------------------------------------------------
 SET SRC=%PREFIX%/Win32/bin
-SRC=%SRC:/=\%
-XCOPY %PREFIX%\*.dll .\build\Release
+SET SRC=%SRC:/=\%
+XCOPY %SRC%\*.dll .\build\Release
 SET PACKAGE=node-occ-package.zip
 7z a %PACKAGE% .\build\Release\*.*
 appveyor PushArtifact %PACKAGE%
